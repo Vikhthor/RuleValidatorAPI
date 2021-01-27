@@ -27,6 +27,14 @@ router.post('/validate-rule', postValidator(), validationResponse, function(req,
 
   const isValid = function(){
     if(nests.length === 1){
+      if(typeof data[nests[0]] === 'undefined'){
+        res.status(400).json({
+          "message": `field ${nests[0]} is missing from data.`,
+          "status": "error",
+          "data": null
+        })
+      }
+
       switch(req.body.rule.condition){
         case 'eq':
           return data[nests[0]] === value;
@@ -42,6 +50,14 @@ router.post('/validate-rule', postValidator(), validationResponse, function(req,
       }
     }
     if(nests.length === 2){
+      if(typeof data[nests[0]][nests[1]] === 'undefined'){
+        res.status(400).json({
+          "message": `field ${nests[0]}.${nests[1]} is missing from data.`,
+          "status": "error",
+          "data": null
+        })
+      }
+
       switch(req.body.rule.condition){
         case 'eq':
           return data[nests[0]][nests[1]] === value;
@@ -57,6 +73,13 @@ router.post('/validate-rule', postValidator(), validationResponse, function(req,
       }
     }
     if(nests.length === 3){
+      if(typeof data[nests[0]][nests[1]][nests[2]] === 'undefined'){
+        res.status(400).json({
+          "message": `field ${nests[0]}.${nests[1]}.${nests[2]} is missing from data.`,
+          "status": "error",
+          "data": null
+        })
+      }
       switch(req.body.rule.condition){
         case 'eq':
           return data[nests[0]][nests[1]][nests[2]] === value;
