@@ -12,13 +12,14 @@ module.exports.postValidator = function(){
     return [
         body("rule")
         .exists().withMessage('rule is required.'),
-        //.isJSON().withMessage('rule should be an object'),
         body('data')
         .exists().withMessage('data is required.'),
-        //.isJSON().withMessage('data should be an object'),
         body('rule.field')
+        .exists().withMessage('rule.field is required.')
         .isString().withMessage('rule.field should be a string.'),
-        body('rule.condition').custom( value => {
+        body('rule.condition')
+        .exists().withMessage('rule.condition is required.')
+        .custom( value => {
           const conditions = ['gte', 'gt', 'eq', 'neq', 'contains'];
           const validCondition = conditions.some(con => value === con);
           if(!validCondition){
@@ -27,6 +28,8 @@ module.exports.postValidator = function(){
             return true;
           }
         }),
+        body('rule.condition_value')
+        .exists().withMessage('rule.condition_value is required.'),
         body('rule').custom( value => {
           if(typeof value !== 'object'){
             throw new Error('rule should be an object.');
