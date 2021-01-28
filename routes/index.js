@@ -45,8 +45,13 @@ router.post('/validate-rule', postValidator(), validationResponse, function(req,
         case 'gte':
           return data[nests[0]] >= value;
         case 'contains':
-          pattern = new RegExp(value, 'i');
-          return pattern.test(data[nests[0]]);
+          if(typeof data[nests[0]] === 'string'){
+            pattern = new RegExp(value, 'i');
+            return pattern.test(data[nests[0]]);
+          }
+          if(typeof data[nests[0]] === 'array'){
+            return data[nests[0]].some(i => value === i);
+          }  
       }
     }
     if(nests.length === 2){
@@ -68,8 +73,13 @@ router.post('/validate-rule', postValidator(), validationResponse, function(req,
         case 'gte':
           return data[nests[0]][nests[1]] >= value;
         case 'contains':
-          pattern = new RegExp(value, 'i');
-          return pattern.test(data[nests[0]][nests[1]]);
+          if(typeof data[nests[0]][nests[1]] === 'string'){
+            pattern = new RegExp(value, 'i');
+            return pattern.test(data[nests[0]][nests[1]]);
+          }
+          if(typeof data[nests[0]][nests[1]] === 'array'){
+            return data[nests[0]][nests[1]].some(i => value === i);
+          } 
       }
     }
     if(nests.length === 3){
@@ -90,8 +100,13 @@ router.post('/validate-rule', postValidator(), validationResponse, function(req,
         case 'gte':
           return data[nests[0]][nests[1]][nests[2]] >= value;
         case 'contains':
-          pattern = new RegExp(value, 'i');
-          return pattern.test(data[nests[0]][nests[1]][nests[2]]);
+          if(typeof data[nests[0]][nests[1]][nests[2]] === 'string'){
+            pattern = new RegExp(value, 'i');
+            return pattern.test(data[nests[0]][nests[1]][nests[2]]);
+          }
+          if(typeof data[nests[0]][nests[1]][nests[2]] === 'array'){
+            return data[nests[0]][nests[1]][nests[2]].some(i => value === i);
+          }
       }
     }
   }
@@ -103,7 +118,9 @@ router.post('/validate-rule', postValidator(), validationResponse, function(req,
         "validation": {
           "error": false,
           "field": `${field}`,
-          "field_value": `${req.body.data[field]}`,
+          "field_value": (nests.length === 1)? `${req.body.data[nests[0]]}` :
+                        (nests.length === 2)? `${req.body.data[nests[0]][nests[1]]}` :
+                        `${req.body.data[nests[0]][nests[1]][nests[2]]}`,
           "condition": `${req.body.rule.condition}`,
           "condition_value": `${value}`
         }
